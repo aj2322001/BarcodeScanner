@@ -21,6 +21,20 @@ final class ScannerVC: UIViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setUpCaptureSession()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard let previewLayer else {
+            scannerDelegate?.didSurface(error: .invalidDeviceInput)
+            return
+        }
+        previewLayer.frame = view.layer.bounds
+    }
+    
     private func setUpCaptureSession() {
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else {
             scannerDelegate?.didSurface(error: .invalidDeviceInput)
@@ -88,7 +102,7 @@ protocol ScannerVcDelegate: class {
 }
 
 //MARK: CameraError
-enum CameraError: String {
-    case invalidDeviceInput      = "Something is wrong with camera. We are uanble to capture the input."
-    case invalidScannedValue     = "The value scanned is not valid. the app scans EAN-8 & EAN-13."
+enum CameraError {
+    case invalidDeviceInput
+    case invalidScannedValue
 }
